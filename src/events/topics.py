@@ -2,3 +2,10 @@ IMAGE_SUBMITTED = "image.submitted"
 INFERENCE_COMPLETED = "inference.completed"
 QUERY_SUBMITTED = "query.submitted"
 QUERY_COMPLETED = "query.completed"
+
+VALID_TOPICS = {
+    IMAGE_SUBMITTED,
+    INFERENCE_COMPLETED,
+    QUERY_SUBMITTED,
+    QUERY_COMPLETED,
+}

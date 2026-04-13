@@ -1,6 +1,8 @@
 import uuid
 from datetime import datetime, timezone
 
+from src.events.topics import VALID_TOPICS
+
 
 def make_event(topic, payload):
     return {
@@ -24,7 +26,7 @@ def validate_event(event):
     if not event["event_id"]:
         raise ValueError("event_id cannot be empty")
 
-    if not event["topic"]:
-        raise ValueError("topic cannot be empty")
+    if event["topic"] not in VALID_TOPICS:
+        raise ValueError(f"Invalid topic: {event['topic']}")
 
     return True
