@@ -22,6 +22,8 @@ class StorageService:
 
         image_id = payload["image_id"]
 
+        print(f"[StorageService] Received inference.completed for {image_id}")
+
         document = {
             "image_id": image_id,
             "image_path": payload["image_path"],
@@ -31,9 +33,14 @@ class StorageService:
         }
 
         self.document_store.save_annotation(image_id, document)
+        print(f"[StorageService] Stored document for {image_id}")
+
         self.vector_store.save_embedding(image_id, payload["embedding"])
+        print(f"[StorageService] Stored embedding for {image_id}")
+
 
     def start(self):
+        print(f"[StorageService] Listening on topic: {INFERENCE_COMPLETED}")
         self.broker.subscribe(INFERENCE_COMPLETED,
                               self.handle_inference_completed)
 
