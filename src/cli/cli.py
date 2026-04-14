@@ -52,7 +52,19 @@ class CLI:
 
                 if topic == ANNOTATION_STORED:
                     print(f"\nAnnotation stored for image: {image_id}")
-                    print(f"Tags: {payload.get('tags', [])}")
+                    tags = payload.get("tags", [])
+
+                    filtered_labels = [
+                        tag["label"]
+                        for tag in tags
+                        if tag.get("score", 0) >= 0.05
+                    ]
+
+                    if filtered_labels:
+                        print(f"Image Tags: {', '.join(filtered_labels)}")
+                    else:
+                        print("Image Tags: none")
+
                     annotation_seen = True
 
                 elif topic == EMBEDDING_STORED:
@@ -103,11 +115,24 @@ class CLI:
                 for i, result in enumerate(results, 1):
                     image_id = result.get("image_id")
                     score = result.get("score", 0.0)
-                    document = result.get("document", {})
-                    tags = document.get("tags", [])
 
-                    print(f"{i}. Image ID: {image_id}, Score: {score:.4f}")
-                    print(f"   Tags: {tags}")
+                    document = result.get("document", {})
+                    image_path = document.get("image_path", "unknown")
+
+                    tags = document.get("tags", [])
+                    filtered_labels = [
+                        tag["label"]
+                        for tag in tags
+                        if tag.get("score", 0) >= 0.05
+                    ]
+
+                    print(f"{i}. Image ID: {image_id}")
+                    print(f"   Similarity: {score:.4f}")
+                    print(f"   Image Path: {image_path}")
+                    if filtered_labels:
+                        print(f"   Image Tags: {', '.join(filtered_labels)}")
+                    else:
+                        print("   Image Tags: none")
 
                 break
         finally:
