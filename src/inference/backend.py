@@ -24,13 +24,13 @@ class InferenceBackend:
         self.model = CLIPModel.from_pretrained(model_name).to(self.device)
         self.model.eval()
 
-        print(f"[InferenceBackend] Model loaded successfully")
+        print("[InferenceBackend] Model loaded successfully")
 
     def run(self, image_path):
         print(f"[InferenceBackend] Opening image: {image_path}")
         image = Image.open(image_path).convert("RGB")
 
-        print(f"[InferenceBackend] Preparing CLIP inputs")
+        print("[InferenceBackend] Preparing CLIP inputs")
         inputs = self.processor(
             text=self.labels,
             images=image,
@@ -39,7 +39,7 @@ class InferenceBackend:
         )
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
 
-        print(f"[InferenceBackend] Running model inference")
+        print("[InferenceBackend] Running model inference")
         with torch.no_grad():
             outputs = self.model(**inputs)
 
