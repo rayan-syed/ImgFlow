@@ -22,10 +22,16 @@ class FakeBackend:
         return [0.0, 0.0, 1.0]
 
 
-def test_query_service_returns_ranked_results():
+def test_query_service_returns_ranked_results(tmp_path):
     broker = FakeBroker()
-    document_store = DocumentStore()
-    vector_store = VectorStore(dim=3)
+    document_store = DocumentStore(
+        filepath=str(tmp_path / "documents.json")
+    )
+    vector_store = VectorStore(
+        dim=3,
+        index_path=str(tmp_path / "faiss.index"),
+        ids_path=str(tmp_path / "vector_ids.json"),
+    )
     backend = FakeBackend()
 
     document_store.save_annotation(
@@ -87,10 +93,16 @@ def test_query_service_returns_ranked_results():
     assert results[0]["document"]["tags"][0]["label"] == "dog"
 
 
-def test_query_service_rejects_missing_query_text():
+def test_query_service_rejects_missing_query_text(tmp_path):
     broker = FakeBroker()
-    document_store = DocumentStore()
-    vector_store = VectorStore(dim=3)
+    document_store = DocumentStore(
+        filepath=str(tmp_path / "documents.json")
+    )
+    vector_store = VectorStore(
+        dim=3,
+        index_path=str(tmp_path / "faiss.index"),
+        ids_path=str(tmp_path / "vector_ids.json"),
+    )
     backend = FakeBackend()
 
     service = QueryService(

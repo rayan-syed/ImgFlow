@@ -17,10 +17,17 @@ class FakeBroker:
         self.published.append((topic, event))
 
 
-def test_storage_service_stores_outputs():
+def test_storage_service_stores_outputs(tmp_path):
     broker = FakeBroker()
-    document_store = DocumentStore()
-    vector_store = VectorStore(dim=3)
+
+    document_store = DocumentStore(
+        filepath=str(tmp_path / "documents.json")
+    )
+    vector_store = VectorStore(
+        dim=3,
+        index_path=str(tmp_path / "faiss.index"),
+        ids_path=str(tmp_path / "vector_ids.json"),
+    )
 
     service = StorageService(
         broker,
@@ -41,8 +48,8 @@ def test_storage_service_stores_outputs():
 
     service.handle_inference_completed(event)
 
-    assert document_store.has_image("img_001")
-    assert vector_store.has_image("img_001")
+    assert document_store.has_image("img_001") is True
+    assert vector_store.has_image("img_001") is True
 
     stored_doc = document_store.get_annotation("img_001")
     assert stored_doc["image_id"] == "img_001"
@@ -65,10 +72,17 @@ def test_storage_service_stores_outputs():
     assert event2["payload"]["image_id"] == "img_001"
 
 
-def test_storage_service_rejects_missing_embedding():
+def test_storage_service_rejects_missing_embedding(tmp_path):
     broker = FakeBroker()
-    document_store = DocumentStore()
-    vector_store = VectorStore(dim=3)
+
+    document_store = DocumentStore(
+        filepath=str(tmp_path / "documents.json")
+    )
+    vector_store = VectorStore(
+        dim=3,
+        index_path=str(tmp_path / "faiss.index"),
+        ids_path=str(tmp_path / "vector_ids.json"),
+    )
 
     service = StorageService(
         broker,
