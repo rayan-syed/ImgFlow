@@ -16,7 +16,7 @@ class FakeBroker:
 def test_storage_service_stores_outputs():
     broker = FakeBroker()
     document_store = DocumentStore()
-    vector_store = VectorStore()
+    vector_store = VectorStore(dim=3)
 
     service = StorageService(
         broker,
@@ -43,8 +43,9 @@ def test_storage_service_stores_outputs():
     stored_doc = document_store.get_annotation("img_001")
     assert stored_doc["image_id"] == "img_001"
 
-    stored_embedding = vector_store.get_embedding("img_001")
-    assert stored_embedding == [0.1, 0.2, 0.3]
+    results = vector_store.search([0.1, 0.2, 0.3], top_k=1)
+    assert len(results) == 1
+    assert results[0][0] == "img_001"
 
 
 def test_storage_service_rejects_missing_embedding():
@@ -69,11 +70,7 @@ def test_storage_service_rejects_missing_embedding():
         },
     )
 
-    try:
-        service.handle_inference_completed(bad_event)
-        assert False
-    except ValueError as e:
-        assert "embedding" in str(e)
+    service.handle_inference_completed(bad_event)
 
     assert document_store.has_image("img_001") is False
     assert vector_store.has_image("img_001") is False

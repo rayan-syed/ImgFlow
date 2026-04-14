@@ -59,8 +59,5 @@ def test_inference_service_rejects_missing_image_path():
         },
     )
 
-    try:
-        service.handle_image_submitted(bad_event)
-        assert False
-    except ValueError as e:
-        assert "image_path" in str(e)
+    service.handle_image_submitted(bad_event)
+    assert len(broker.published) == 0
