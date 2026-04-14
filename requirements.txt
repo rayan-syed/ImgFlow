@@ -2,3 +2,6 @@ pytest
 autopep8
 flake8
 redis
+torch
+transformers
+pillow
